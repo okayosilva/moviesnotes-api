@@ -1,71 +1,257 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.0",
   "info": {
-    "description": "API de cadastrar filmes e notas de filmes",
-    "version": "0.0.1",
-    "title": "Movies Notes API",
-    "termsOfService": "http://moviesnotes.com/terms/",
-    "contact": {
-      "email": "kayo16silva@gmail.com"
-    }
+    "title": "Movies-API",
+    "description": "API para criar notas sobre filmes",
+    "version": "0.0.1"
   },
-  "host": "localhost:3333",
-  "basePath": "/",
-  "tags": [
-    {
-      "name": "movies",
-      "description": "Everything about your Movies",
-      "externalDocs": {
-        "description": "Find out more",
-        "url": "http://moviesnotes.com"
-      }
-    }
-  ],
   "paths": {
-    "/movies": {
+    "/notes": {
       "get": {
-        "tags": ["movies"],
-        "summary": "Get all movies",
-        "operationId": "getMovies",
-        "produces": ["application/json"],
-        "responses": {
-          "200": {
-            "description": "successful operation",
+        "summary": "Retorna uma lista de notas com as informações dos filmes",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "user_id",
+            "required": true,
+            "description": "ID do filme / Nota",
             "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Movie"
-              }
+              "type": "integer"
             }
           },
-          "400": {
-            "description": "Invalid status value"
+          {
+            "in": "query",
+            "name": "title",
+            "required": false,
+            "description": "Filtro por título"
+          },
+          {
+            "in": "query",
+            "name": "tags",
+            "required": false,
+            "description": "Filtro por tags"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de notas de filme"
+          }
+        }
+      }
+    },
+    "/notes/{id}": {
+      "get": {
+        "summary": "Retorna uma nota de filmes específica",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "ID da nota",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalhes de uma nota de filmes específica"
+          },
+          "404": {
+            "description": "Nota não encontrada"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove uma nota de filmes específica",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "ID de uma nota de filmes específica",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Nota removida com sucesso"
+          },
+          "404": {
+            "description": "Nota não encontrada"
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria uma nova nota de filmes",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "ID do usuário que a nota será vinculada",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Notes"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Nota criada com sucesso"
+          },
+          "404": {
+            "description": "Nota não foi criada"
+          }
+        }
+      }
+    },
+    "/tags/{id}": {
+      "get": {
+        "summary": "Retorna todas as tags cadastradas pelo usuário",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "description": "ID do usuário",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de notas de filme"
+          }
+        }
+      }
+    }, 
+    "/users/{id}": {
+      "put": {
+        "summary": "Altera os valores passados no corpo da requisição",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/password"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário alterado com sucesso"
+          }
+        }
+      }   
+    },
+    "users/": {
+      "post": {
+        "summary": "Cria um novo usuário",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Usuario"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Alteração concluída"
           }
         }
       }
     }
   },
-  "definitions": {
-    "Movie": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int64"
+  "components": {
+    "schemas": {
+      "Notes": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number"
+          },
+            "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+            }
         },
-        "title": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "director": {
-          "type": "string"
-        }
+        
+        "required": [
+          "title",
+          "description",
+          "tags"
+        ]
       },
-      "xml": {
-        "name": "Movie"
+      "Usuario": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        
+        "required": [
+          "title",
+          "description",
+          "tags"
+        ]
+      },
+      "password": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "old_password": {
+            "type": "string"
+          }
+        },
+        
+        "required": [
+          "title",
+          "description",
+          "tags"
+        ]
       }
     }
-  }
+  },
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ]
 }
