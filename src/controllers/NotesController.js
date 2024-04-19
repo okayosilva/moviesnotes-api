@@ -53,7 +53,7 @@ class NotesController {
 
     if(tags) {
       const filterTags = tags.split(",").map(tag => tag.trim())
-      console.log(filterTags)
+"react,node,css"
       notes = await knex("tags")
       .select([
         "notes.id",
